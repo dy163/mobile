@@ -21,7 +21,7 @@
                 />
             </van-cell-group>
             <div class="but">
-                <van-button type="info" class="btn">信息按钮</van-button>
+                <van-button type="info" class="btn" @click.prevent="handleLogin">登录</van-button>
             </div>
         </form>
     </div>
@@ -29,14 +29,28 @@
 </template>
 
 <script>
+import { login } from '@/api/user'
 export default {
-  // n;ame: 'LoginIndex',
-  name: 'login',
+  name: 'LoginIndex',
   data () {
     return {
       user: {
-        mobile: '',
-        code: ''
+        mobile: '18636235298',
+        code: '123456'
+      }
+    }
+  },
+  methods: {
+    async handleLogin () {
+      try {
+        const res = await login(this.user)
+        console.log(res)
+        this.$router.push({
+          name: 'home'
+        })
+      } catch (err) {
+        console.log(err)
+        this.$message.error('登录失败')
       }
     }
   }
