@@ -11,6 +11,7 @@
                     clearable
                     label="手机号"
                     placeholder="请输入手机号"
+                    :error-message="erroes.mobile"
                 />
                 <van-field
                     v-model="user.code"
@@ -18,12 +19,14 @@
                     label="密码"
                     placeholder="请输入密码"
                     required
+                    :error-message="erroes.code"
                 />
             </van-cell-group>
             <div class="but">
                 <van-button
                 type="info"
                 class="btn"
+
                 @click.prevent="handleLogin"
                 :loading="loginLoading"
                 loading-text="loading...">登录</van-button>
@@ -43,13 +46,38 @@ export default {
         mobile: '18636235298',
         code: '123456'
       },
-      loginLoading: false
+      loginLoading: false, // 控制加载状态
+      erroes: {
+        mobile: '',
+        code: ''
+      }
     }
   },
   methods: {
     async handleLogin () {
-      this.loginLoading = true
+      // this.loginLoading = true
       try {
+        // 发送求之前校验登录数据
+        const { mobile, code } = this.user
+        const erroes = this.erroes
+        if (mobile.length) {
+          erroes.mobile = ''
+        } else {
+          return
+          // erroes.mobile = '手机号不能为空'
+        }
+        if (code.length) {
+          erroes.code = ''
+        } else {
+          return
+          // erroes.code = '密码错误'
+        }
+
+        // if (!code.length) {
+        //   return this.erroes.code('密码错误')
+        // }
+        // 表单验证通过执行
+        this.loginLoading = true
         const data = await login(this.user)
         this.$store.commit('setUser', data)
         this.$router.push({
@@ -57,8 +85,7 @@ export default {
         })
         // this.loginLoading = true
       } catch (err) {
-        console.log(err)
-        this.$message.error('登录失败')
+        console.log(err, '登录失败')
       }
       this.loginLoading = false
     }
