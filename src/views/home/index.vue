@@ -3,7 +3,7 @@
       <!-- 头部 -->
       <van-nav-bar title="首页" fixed class="van-nav-bar-heade"/>
       <!-- 频道标签 -->
-      <van-tabs v-model="activeChange" sticky>
+      <van-tabs v-model="activeChange" class="channel-tabs">
         <van-tab title="标签 1" class="tab-list">
           <van-pull-refresh v-model="pullIsLoading" @refresh="onRefresh">
             <van-list
@@ -73,8 +73,18 @@ export default {
 </script>
 
 <style lang='less' scoped>
-.van-tabs {
-
+.channel-tabs {
+  margin-bottom: 100px;
+}
+// /deep/ 的作用（深度作用选择器）
+// 参考文档：https://vue-loader.vuejs.org/zh/guide/scoped-css.html#%E6%B7%B1%E5%BA%A6%E4%BD%9C%E7%94%A8%E9%80%89%E6%8B%A9%E5%99%A8
+// 注意：你在页面上测量的是设备像素，我们的样式规则转换是基于 75 进行转换的，所以在这里写的时候都 * 2
+.channel-tabs /deep/ .van-tabs__wrap {
+  position: fixed;
+  top: 92px;
+}
+.channel-tabs /deep/ .van-tabs__content {
+  margin-top: 92px;
 }
 .van-nav-bar-heade {
   background-color: #8ecce9;

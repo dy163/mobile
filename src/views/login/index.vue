@@ -44,7 +44,7 @@ export default {
     return {
       user: {
         mobile: '18636235298',
-        code: '123456'
+        code: '246810'
       },
       loginLoading: false, // 控制加载状态
       erroes: {
@@ -63,14 +63,14 @@ export default {
         if (mobile.length) {
           erroes.mobile = ''
         } else {
+          erroes.mobile = '手机号不能为空'
           return
-          // erroes.mobile = '手机号不能为空'
         }
         if (code.length) {
           erroes.code = ''
         } else {
+          erroes.code = '密码错误'
           return
-          // erroes.code = '密码错误'
         }
 
         // if (!code.length) {
