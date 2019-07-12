@@ -9,7 +9,11 @@
         v-for="channelsItem in channels"
         :key="channelsItem.id"
         class="tab-list">
-          <van-pull-refresh v-model="pullIsLoading" @refresh="onRefresh">
+          <van-pull-refresh
+          :success-text="channelsItem.downPullSuccessText"
+          :success-duration="1000"
+          v-model="channelsItem.downPullLoading"
+          @refresh="onRefresh">
             <van-list
               v-model="channelsItem.upPullLoading"
               :finished="channelsItem.upPullFinished"
@@ -54,6 +58,14 @@ export default {
   computed: {
     activeChannel () {
       return this.channels[this.activeChannelIndex]
+    }
+  },
+
+  watch: {
+    // 监视容器中的user用户
+    // 记住: 凡是能 this. 点出来的成员都可以在这里监视
+    '$store.state.user' () {
+      this.loadChannels()
     }
   },
 
@@ -141,11 +153,36 @@ export default {
       // }, 500)
     },
     // 下拉加载更多 重置数据
-    onRefresh () {
-      setTimeout(() => {
-        this.$toast('刷新成功')
-        this.pullIsLoading = false
-      }, 500)
+    async onRefresh () {
+      // 单独拿出来activeChannel
+      const { activeChannel } = this
+      // 备份加载下一页的时间戳
+      const timestamp = activeChannel.timestamp
+      // 获取最新的数据
+      activeChannel.timestamp = Date.now()
+      const data = await this.loadArticles()
+
+      // 如果有最新数据
+      if (data.results.length) {
+        // 重置最新的推荐列表更新到文章列表中
+        activeChannel.articles = data.results
+        // 由于你重置了文章列表,那么当前数据中的 pre_timestamp 就是下拉加载更多的下一页数据的时间戳
+        activeChannel.timestamp = data.pre_timestamp
+        activeChannel.downPullSuccessText = '更新成功'
+        this.onLoad()
+      } else {
+        // 如果没有最新数据,提示
+        activeChannel.downPullSuccessText = '已是最新数据'
+      }
+      // 下拉刷新取消loading状态
+      activeChannel.downPullLoading = false
+
+      activeChannel.timestamp = timestamp
+
+      // setTimeout(() => {
+      //   this.$toast('刷新成功')
+      //   this.pullIsLoading = false
+      // }, 500)
     },
 
     async loadArticles () {
