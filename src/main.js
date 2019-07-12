@@ -19,6 +19,13 @@ Vue.use(Vant)
 // Vue
 // .use(NavBar)
 // .use(Field)
+Vue.prototype.$sleep = time => {
+  return new Promise((resolve, reject) => {
+    window.setTimeout(() => {
+      resolve()
+    }, time)
+  })
+}
 
 Vue.config.productionTip = false
 

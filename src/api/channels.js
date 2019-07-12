@@ -12,9 +12,9 @@ export const getUserChannels = () => {
   })
 }
 
-export const getArticles = () => {
-  return request({
-    method: 'GET',
-    url: '/app/v1_0/articles'
-  })
-}
+// export const getArticles = () => {
+//   return request({
+//     method: 'GET',
+//     url: '/app/v1_0/articles'
+//   })
+// }

@@ -3,7 +3,7 @@
       <!-- 头部 -->
       <van-nav-bar title="首页" fixed class="van-nav-bar-heade"/>
       <!-- 频道标签 -->
-      <van-tabs v-model="activeChange" class="channel-tabs">
+      <van-tabs v-model="activeChannelIndex" class="channel-tabs">
         <van-tab
         :title="channelsItem.name"
         v-for="channelsItem in channels"
@@ -11,14 +11,14 @@
         class="tab-list">
           <van-pull-refresh v-model="pullIsLoading" @refresh="onRefresh">
             <van-list
-              v-model="loading"
-              :finished="finished"
+              v-model="channelsItem.upPullLoading"
+              :finished="channelsItem.upPullFinished"
               finished-text="没有更多了"
               @load="onLoad">
             <van-cell
-              v-for="item in list"
-              :key="item"
-              :title="item"
+              v-for="articleItem in channelsItem.articles"
+              :key="articleItem.art_id"
+              :title="articleItem.title"
             />
             </van-list>
           </van-pull-refresh>
@@ -37,16 +37,23 @@
 
 <script>
 import { getUserChannels } from '@/api/channels'
+import { getArticles } from '@/api/article'
 export default {
   name: 'HoemIndex',
   data () {
     return {
-      activeChange: 0,
+      activeChannelIndex: 0,
       list: [],
       loading: false,
       finished: false,
       pullIsLoading: false,
       channels: [] // 存储频道列表
+    }
+  },
+
+  computed: {
+    activeChannel () {
+      return this.channels[this.activeChannelIndex]
     }
   },
 
@@ -73,29 +80,82 @@ export default {
           channels = data.channels
         }
       }
+      // 修改channels 使这个数据结构满足我们的使用需求
+      channels.forEach(item => {
+        item.articles = [] // 用来存储当前的文章列表
+        item.timestamp = Date.now() // 存储下一页的时间戳
+        item.downPullLoading = false // 控制当前频道的下拉刷新的loading状态
+        item.upPullLoading = false // 控制上拉的 loading 状态
+        item.upPullFinished = false // 控制当前频道数据是否加载完毕
+        // item.upPullFinished = false //
+      })
+
       this.channels = channels
     },
+    // 上拉加载更多 push 数据
+    async onLoad () {
+      await this.$sleep(800)
+      let data = []
+      data = await this.loadArticles()
 
-    onLoad () {
+      /**
+       * pre_timestamp 时间戳表示下一页的数据
+       * results 是显示文章的
+       */
+      if (!data.pre_timestamp && !data.results.length) {
+        // 设置当前频道数据加载完毕组件会自动给出提示,并且不在加载onload
+        this.activeChannel.upPullFinished = true
+
+        this.activeChannel.upPullLoading = false
+        // 不住往后执行了
+        return
+      }
+      // 没有数据加载上一页的数据
+      if (data.pre_timestamp && !data.results.length) {
+        this.activeChannel.timestamp = data.pre_timestamp
+        // 加载下一页的数据, 将 pre_timestamp 更新到当前频道中用于加载下一页数据
+        data = await this.loadArticles()
+      }
+
+      // 数据加载好以后
+      this.activeChannel.timestamp = data.pre_timestamp
+
+      // 将文章更新到频道中(注意不要赋值 是push 到最上面)
+      this.activeChannel.articles.push(...data.results)
+
+      // 数据加载完毕取消加载状态的loading
+      this.activeChannel.upPullLoading = false
+      console.log(data)
       // 异步更新数据
-      setTimeout(() => {
-        for (let i = 0; i < 10; i++) {
-          this.list.push(this.list.length + 1)
-        }
-        // 加载状态结束
-        this.loading = false
+      // setTimeout(() => {
+      //   for (let i = 0; i < 10; i++) {
+      //     this.list.push(this.list.length + 1)
+      //   }
+      //   // 加载状态结束
+      //   this.loading = false
 
-        // 数据全部加载完成
-        if (this.list.length >= 40) {
-          this.finished = true
-        }
-      }, 500)
+      //   // 数据全部加载完成
+      //   if (this.list.length >= 40) {
+      //     this.finished = true
+      //   }
+      // }, 500)
     },
+    // 下拉加载更多 重置数据
     onRefresh () {
       setTimeout(() => {
         this.$toast('刷新成功')
         this.pullIsLoading = false
       }, 500)
+    },
+
+    async loadArticles () {
+      const { id: channelId, timestamp } = this.activeChannel
+      const data = await getArticles({
+        channelId, // 当前的频道的id
+        timestamp, // 当前最新的时间
+        withTop: 1 // 是否包含置顶的数据
+      })
+      return data
     }
   }
 }
