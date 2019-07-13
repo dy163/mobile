@@ -64,16 +64,50 @@ export default {
   watch: {
     // 监视容器中的user用户
     // 记住: 凡是能 this. 点出来的成员都可以在这里监视
-    '$store.state.user' () {
-      this.loadChannels()
+    async '$store.state.user' () {
+      console.log('user 变了')
+      await this.loadChannels()
+      // 由于重新加载了视频数据,所以频道被清空了
+      // 而且上拉加载没有更多的onload 没有主动触发
+      this.activeChannel.upPullLoading = true
+      this.onLoad()
     }
   },
 
-  created () {
-    this.loadChannels()
+  async created () {
+    console.log('组件重新 created 渲染了')
+    // 加载频道列表
+    await this.loadChannels()
   },
 
   methods: {
+    // async loadChannels () {
+    //   let channels = []
+    //   const { user } = this.$store.state
+    //   // 如果已登录请求用户列表数据
+    //   if (user) {
+    //     channels = (await getUserChannels()).channels
+    //   } else {
+    //   // 没有登录就请求默认的登录数据
+    //     const localChannels = JSON.parse(window.localStorage.getItem('channels'))
+    //     if (localChannels) {
+    //       channels = localChannels
+    //     } else {
+    //     // 如果没有,则请求获取推荐的的默认频道列表
+    //       channels = (await getUserChannels()).channels
+    //     }
+    //   }
+    //   // 修改channels 使这个数据结构满足我们的使用需求
+    //   channels.forEach(item => {
+    //     item.articles = [] // 用来存储当前的文章列表
+    //     item.timestamp = Date.now() // 存储下一页的时间戳
+    //     item.downPullLoading = false // 控制当前频道的下拉刷新的loading状态
+    //     item.upPullLoading = false // 控制上拉的 loading 状态
+    //     item.upPullFinished = false // 控制当前频道数据是否加载完毕
+    //   // item.upPullFinished = false //
+    //   })
+    //   this.channels = channels
+    // },
     async loadChannels () {
       const { user } = this.$store.state
       let channels = []
@@ -115,7 +149,7 @@ export default {
        * results 是显示文章的
        */
       if (!data.pre_timestamp && !data.results.length) {
-        // 设置当前频道数据加载完毕组件会自动给出提示,并且不在加载onload
+      // 设置当前频道数据加载完毕组件会自动给出提示,并且不在加载onload
         this.activeChannel.upPullFinished = true
 
         this.activeChannel.upPullLoading = false
@@ -137,24 +171,12 @@ export default {
 
       // 数据加载完毕取消加载状态的loading
       this.activeChannel.upPullLoading = false
-      console.log(data)
-      // 异步更新数据
-      // setTimeout(() => {
-      //   for (let i = 0; i < 10; i++) {
-      //     this.list.push(this.list.length + 1)
-      //   }
-      //   // 加载状态结束
-      //   this.loading = false
 
-      //   // 数据全部加载完成
-      //   if (this.list.length >= 40) {
-      //     this.finished = true
-      //   }
-      // }, 500)
+      console.log(data)
     },
     // 下拉加载更多 重置数据
     async onRefresh () {
-      // 单独拿出来activeChannel
+    // 单独拿出来activeChannel
       const { activeChannel } = this
       // 备份加载下一页的时间戳
       const timestamp = activeChannel.timestamp
@@ -164,14 +186,14 @@ export default {
 
       // 如果有最新数据
       if (data.results.length) {
-        // 重置最新的推荐列表更新到文章列表中
+      // 重置最新的推荐列表更新到文章列表中
         activeChannel.articles = data.results
         // 由于你重置了文章列表,那么当前数据中的 pre_timestamp 就是下拉加载更多的下一页数据的时间戳
         activeChannel.timestamp = data.pre_timestamp
         activeChannel.downPullSuccessText = '更新成功'
         this.onLoad()
       } else {
-        // 如果没有最新数据,提示
+      // 如果没有最新数据,提示
         activeChannel.downPullSuccessText = '已是最新数据'
       }
       // 下拉刷新取消loading状态
@@ -179,10 +201,10 @@ export default {
 
       activeChannel.timestamp = timestamp
 
-      // setTimeout(() => {
-      //   this.$toast('刷新成功')
-      //   this.pullIsLoading = false
-      // }, 500)
+    // setTimeout(() => {
+    //   this.$toast('刷新成功')
+    //   this.pullIsLoading = false
+    // }, 500)
     },
 
     async loadArticles () {

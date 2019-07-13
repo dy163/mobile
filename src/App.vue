@@ -1,9 +1,9 @@
 <template>
   <div id="app">
-    <!-- <keep_alive>
+    <keep-alive>
       <router-view></router-view>
-    </keep_alive> -->
-    <router-view></router-view>
+    </keep-alive>
+    <!-- <router-view></router-view> -->
   </div>
 </template>
 
