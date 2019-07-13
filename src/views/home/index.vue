@@ -4,6 +4,9 @@
       <van-nav-bar title="首页" fixed class="van-nav-bar-heade"/>
       <!-- 频道标签 -->
       <van-tabs v-model="activeChannelIndex" class="channel-tabs">
+        <div slot="nav-right" class="nav-icon" @click="isChannelShow = true">
+          <van-icon name="bars" />
+        </div>
         <van-tab
         :title="channelsItem.name"
         v-for="channelsItem in channels"
@@ -36,14 +39,20 @@
         <van-tabbar-item icon="friends-o" to="video">视频</van-tabbar-item>
         <van-tabbar-item icon="setting-o" to="me">我的</van-tabbar-item>
       </van-tabbar>
+      <!-- 频道组件 -->
+      <home-channel v-model="isChannelShow"/>
   </div>
 </template>
 
 <script>
 import { getUserChannels } from '@/api/channels'
 import { getArticles } from '@/api/article'
+import HomeChannel from './components/channel'
 export default {
   name: 'HoemIndex',
+  components: {
+    HomeChannel
+  },
   data () {
     return {
       activeChannelIndex: 0,
@@ -51,7 +60,8 @@ export default {
       loading: false,
       finished: false,
       pullIsLoading: false,
-      channels: [] // 存储频道列表
+      channels: [], // 存储频道列表
+      isChannelShow: false // 控制频道面板的显示状态
     }
   },
 
@@ -236,5 +246,13 @@ export default {
 }
 .van-nav-bar-heade {
   background-color: #8ecce9;
+}
+.nav-icon {
+  position: sticky;
+  right: 0;
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  // opacity: .6;
 }
 </style>
