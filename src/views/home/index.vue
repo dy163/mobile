@@ -40,7 +40,10 @@
         <van-tabbar-item icon="setting-o" to="me">我的</van-tabbar-item>
       </van-tabbar>
       <!-- 频道组件 -->
-      <home-channel v-model="isChannelShow"/>
+      <home-channel
+      v-model="isChannelShow"
+      :user-channels.sync="channels"
+      :active-index.sync="activeChannelIndex"/>
   </div>
 </template>
 
@@ -210,11 +213,6 @@ export default {
       activeChannel.downPullLoading = false
 
       activeChannel.timestamp = timestamp
-
-    // setTimeout(() => {
-    //   this.$toast('刷新成功')
-    //   this.pullIsLoading = false
-    // }, 500)
     },
 
     async loadArticles () {
