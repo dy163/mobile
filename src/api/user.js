@@ -12,3 +12,15 @@ export const login = ({ mobile, code }) => request({
     code
   }
 })
+/**
+ * 拉黑作者
+ */
+export const addBlacklists = (userId) => {
+  return request({
+    method: 'POST',
+    url: '/app/v1_0/user/blacklists',
+    data: {
+      target: userId
+    }
+  })
+}

@@ -78,17 +78,22 @@
       <van-dialog
         v-model="isMoreActionShow"
         :showConfirmButton="false"
+        closeOnClickOverlay
+        :before-close="handleMoreActionClose"
       >
         <van-cell-group v-if="!isToggleRubbish">
           <van-cell title="不感兴趣" label="减少推送" @click="handleDiskike"/>
           <van-cell title="反馈垃圾内容" label="更多" is-link @click="isToggleRubbish = true"/>
-          <van-cell title="拉黑作者"/>
+          <van-cell title="拉黑作者" @click="handleAddBlacklist"/>
         </van-cell-group>
         <van-cell-group v-else="">
           <van-cell icon="arrow-left" @click="isToggleRubbish = false"/>
-          <van-cell title="标题夸张"/>
-          <van-cell title="低俗色情"/>
-          <van-cell title="旧闻重复"/>
+          <van-cell
+            v-for="item in repotType"
+            :key="item.value"
+            :title="item.label"
+            @click="handleRepotArticle(item.value)"
+          />
         </van-cell-group>
       </van-dialog>
   </div>
@@ -96,7 +101,8 @@
 
 <script>
 import { getUserChannels } from '@/api/channels'
-import { getArticles, dislikesArticles } from '@/api/article'
+import { getArticles, dislikesArticles, reportArticle } from '@/api/article'
+import { addBlacklists } from '@/api/user'
 import HomeChannel from './components/channel'
 
 export default {
@@ -114,7 +120,18 @@ export default {
       channels: [], // 存储频道列表
       isChannelShow: false, // 控制频道面板的显示状态
       isMoreActionShow: false, // 控制弹框显示
-      isToggleRubbish: false // 控制弹框显示
+      isToggleRubbish: false, // 控制弹框显示
+      repotType: [
+        { label: '标题夸张', value: '1' },
+        { label: '低俗色情', value: '2' },
+        { label: '错别字多', value: '3' },
+        { label: '旧闻重复', value: '4' },
+        { label: '广告软文', value: '5' },
+        { label: '内容不实', value: '6' },
+        { label: '涉嫌违法犯罪', value: '7' },
+        { label: '侵权', value: '8' },
+        { label: '其他问题', value: '0' }
+      ] // 举报类型
     }
   },
 
@@ -306,6 +323,51 @@ export default {
       console.log(delIndex)
       // this.activeChannel.articles.splice(delIndex, 1)
       articles.splice(delIndex, 1)
+      this.$toast('操作成功')
+    },
+
+    async handleAddBlacklist () {
+      const articleId = this.currentArticle.art_id.toString()
+      await addBlacklists(this.currentArticle.aut_id)
+      this.isMoreActionShow = false
+      this.$toast('操作成功')
+      // 移除对话框
+      // 当前文章列表
+      const articles = this.activeChannel.articles
+      /**
+       * 找到不喜欢的文章位于文章的索引
+       * findIndex是数组的一个方法,会遍历数组,找到满足的articleItem.id === articleId 条件的数据的id
+       */
+      const delIndex = this.activeChannel.articles.findIndex(articleItem => articleItem.art_id.toString() === articleId)
+      console.log(delIndex)
+      // this.activeChannel.articles.splice(delIndex, 1)
+      articles.splice(delIndex, 1)
+      this.$toast('操作成功')
+    },
+
+    async handleRepotArticle (type) {
+      try {
+        await reportArticle({
+          articleId: this.currentArticle.art_id.toString(),
+          type,
+          remark: ''
+        })
+        this.isMoreActionShow = false
+        this.$toast('举报成功')
+      } catch (err) {
+        if (err.response.status === 409) {
+          this.$toast('文章已被举报')
+        }
+      }
+    },
+    /**
+     * 关闭前的回调
+     */
+    handleMoreActionClose (action, done) {
+      done()
+      window.setTimeout(() => {
+        this.isToggleRubbish = false
+      }, 800)
     }
   }
 }
