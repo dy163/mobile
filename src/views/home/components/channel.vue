@@ -65,7 +65,7 @@
 </template>
 
 <script>
-import { getAllChannels } from '@/api/channels'
+import { getAllChannels, deleteUserChannel, updateUserChannel } from '@/api/channels'
 export default {
   name: 'HomeChannel',
   props: {
@@ -127,7 +127,7 @@ export default {
       }
     },
 
-    handleAddChannel (item) {
+    async handleAddChannel (item) {
       const channels = this.userChannels.slice(0)
       channels.push(item)
       this.$emit('update:user-channels', channels)
@@ -136,7 +136,10 @@ export default {
       const { user } = this.$store.state
 
       if (user) {
-
+        await updateUserChannel([{
+          id: item.id,
+          seq: channels.length - 1 // 序号
+        }])
       } else {
         // 没有登录
         // const localChannels = JSON.parse(window.localStorage.getItem('channels'))
@@ -148,7 +151,7 @@ export default {
       }
     },
 
-    handleUserChannelClick (item, index) {
+    async handleUserChannelClick (item, index) {
       try {
         // 如果是非编辑的状态,是切换tab显示
         if (!this.isEdit) {
@@ -157,6 +160,17 @@ export default {
           return
         }
         // 如果是编辑状态,则是删除操作
+        const channels = this.userChannels.slice(0)
+        channels.splice(index, 1)
+        this.$emit('update:user-channels', channels)
+        // 如果用户登录,则删除
+        const { user } = this.$store.state
+        if (user) {
+          await deleteUserChannel(item.id)
+          return
+        }
+        // 如果没有登录,则将数据保存到本地存储
+        window.localStorage.setItem('channels', JSON.stringify(channels))
       } catch (error) {
         console.log('修改失败')
       }

@@ -21,3 +21,42 @@ export const getAllChannels = () => {
     url: '/app/v1_0/channels'
   })
 }
+/**
+ * 用户指定删除列表
+ */
+export const deleteUserChannel = channelId => {
+  return request({
+    method: 'DELETE',
+    url: `/app/v1_0/user/channels/${channelId}`
+  })
+}
+/**
+ * 批量修改用户频道列表（部分覆盖）
+ */
+export const updateUserChannel = channels => {
+  return request({
+    method: 'PATCH',
+    url: '/app/v1_0/user/channels',
+    data: {
+      channels
+    }
+  })
+}
+/**
+ * 批量修改用户频道列表（重置式）
+ */
+// export const addUserChannel = () => {
+//   return request({
+//     method: 'PUT',
+//     url: '/app/v1_0/user/channels'
+//   })
+// }
+/**
+ * 用户指定增加列表
+ */
+// export const addUserChannel = () => {
+//   return request({
+//     method: 'POST',
+//     url: '/app/v1_0/user/channels'
+//   })
+// }

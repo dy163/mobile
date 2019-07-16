@@ -26,7 +26,15 @@
               v-for="articleItem in channelsItem.articles"
               :key="articleItem.art_id"
               :title="articleItem.title"
-            />
+            >
+              <p slot="label">
+                <span>{{ articleItem.aut_name }}</span>
+                &nbsp;
+                <span>{{ articleItem.comm_count }}</span>
+                &nbsp;
+                <span>{{ articleItem.pubdate}}</span>
+              </p>
+            </van-cell>
             </van-list>
           </van-pull-refresh>
 
@@ -51,6 +59,12 @@
 import { getUserChannels } from '@/api/channels'
 import { getArticles } from '@/api/article'
 import HomeChannel from './components/channel'
+// import dayJs from 'dayjs'
+// import relativeTime from 'dayjs/plugin/relativeTime'
+// import 'dayjs/locale/zh-cn'
+// dayjs.locale('zh-cn')
+
+// dayjs.extend(relativeTime)
 export default {
   name: 'HoemIndex',
   components: {
