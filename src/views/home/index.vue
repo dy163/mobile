@@ -27,13 +27,32 @@
               :key="articleItem.art_id"
               :title="articleItem.title"
             >
-              <p slot="label">
-                <span>{{ articleItem.aut_name }}</span>
-                &nbsp;
-                <span>{{ articleItem.comm_count }}</span>
-                &nbsp;
-                <span>{{ articleItem.pubdate}}</span>
-              </p>
+              <div slot="label">
+                <template v-if="articleItem.cover.type">
+                  <van-grid :border="false" :column-num="3">
+                    <van-grid-item v-for="(img,index) in articleItem.cover.images"
+                    :key="index">
+                      <van-image :src="img" lazy-load/>
+                    </van-grid-item>
+                  </van-grid>
+                </template>
+
+                <p slot="label">
+                  <span>{{ articleItem.aut_name }}</span>
+                  &nbsp;
+                  <span>{{ articleItem.comm_count }}评论</span>
+                  &nbsp;
+                  <!-- <span>{{ relativeTime(articleItem.pubdate) }}</span> -->
+                  <!--
+                    过滤器就是一种函数,只不过是在模板中调用的函数的另一种方式
+                    一般用于格式化的输出
+                    过滤器可以定义到全局
+                    全局: Vue.filter('过滤器名称')
+                  -->
+                  <span>{{ articleItem.pubdate | relativeTime }}</span>
+                </p>
+              </div>
+
             </van-cell>
             </van-list>
           </van-pull-refresh>
@@ -59,12 +78,7 @@
 import { getUserChannels } from '@/api/channels'
 import { getArticles } from '@/api/article'
 import HomeChannel from './components/channel'
-// import dayJs from 'dayjs'
-// import relativeTime from 'dayjs/plugin/relativeTime'
-// import 'dayjs/locale/zh-cn'
-// dayjs.locale('zh-cn')
 
-// dayjs.extend(relativeTime)
 export default {
   name: 'HoemIndex',
   components: {
@@ -87,6 +101,12 @@ export default {
       return this.channels[this.activeChannelIndex]
     }
   },
+
+  // filters: {
+  //   relativeTime (val) {
+  //     return dayjs().from(dayjs(val))
+  //   }
+  // },
 
   watch: {
     // 监视容器中的user用户
