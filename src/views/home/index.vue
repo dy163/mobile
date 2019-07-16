@@ -24,7 +24,7 @@
               @load="onLoad">
             <van-cell
               v-for="articleItem in channelsItem.articles"
-              :key="articleItem.art_id"
+              :key="articleItem.art_id.toString()"
               :title="articleItem.title"
             >
               <div slot="label">
@@ -50,6 +50,9 @@
                     全局: Vue.filter('过滤器名称')
                   -->
                   <span>{{ articleItem.pubdate | relativeTime }}</span>
+                  <!-- 这是更多的操作按钮 -->
+                  &nbsp;
+                  <van-icon class="close" name="close" @click="handleShowMoreAction(articleItem)"/>
                 </p>
               </div>
 
@@ -71,12 +74,29 @@
       v-model="isChannelShow"
       :user-channels.sync="channels"
       :active-index.sync="activeChannelIndex"/>
+      <!-- 更多弹框组件 -->
+      <van-dialog
+        v-model="isMoreActionShow"
+        :showConfirmButton="false"
+      >
+        <van-cell-group v-if="!isToggleRubbish">
+          <van-cell title="不感兴趣" label="减少推送" @click="handleDiskike"/>
+          <van-cell title="反馈垃圾内容" label="更多" is-link @click="isToggleRubbish = true"/>
+          <van-cell title="拉黑作者"/>
+        </van-cell-group>
+        <van-cell-group v-else="">
+          <van-cell icon="arrow-left" @click="isToggleRubbish = false"/>
+          <van-cell title="标题夸张"/>
+          <van-cell title="低俗色情"/>
+          <van-cell title="旧闻重复"/>
+        </van-cell-group>
+      </van-dialog>
   </div>
 </template>
 
 <script>
 import { getUserChannels } from '@/api/channels'
-import { getArticles } from '@/api/article'
+import { getArticles, dislikesArticles } from '@/api/article'
 import HomeChannel from './components/channel'
 
 export default {
@@ -92,7 +112,9 @@ export default {
       finished: false,
       pullIsLoading: false,
       channels: [], // 存储频道列表
-      isChannelShow: false // 控制频道面板的显示状态
+      isChannelShow: false, // 控制频道面板的显示状态
+      isMoreActionShow: false, // 控制弹框显示
+      isToggleRubbish: false // 控制弹框显示
     }
   },
 
@@ -257,6 +279,33 @@ export default {
         withTop: 1 // 是否包含置顶的数据
       })
       return data
+    },
+    // 显示更多操作的按钮
+    async handleShowMoreAction (articleItem) {
+      // 将点击操作跟多的文章封存起,用于后面使用
+      this.currentArticle = articleItem
+      // 显示弹框
+      this.isMoreActionShow = true
+    },
+
+    async handleDiskike () {
+      // 拿到操作文章的id
+      const articleId = this.currentArticle.art_id.toString()
+      // 亲求完成操作
+      await dislikesArticles(articleId)
+      // 隐藏对话框
+      this.isMoreActionShow = false
+      // 移除对话框
+      // 当前文章列表
+      const articles = this.activeChannel.articles
+      /**
+       * 找到不喜欢的文章位于文章的索引
+       * findIndex是数组的一个方法,会遍历数组,找到满足的articleItem.id === articleId 条件的数据的id
+       */
+      const delIndex = this.activeChannel.articles.findIndex(articleItem => articleItem.art_id.toString() === articleId)
+      console.log(delIndex)
+      // this.activeChannel.articles.splice(delIndex, 1)
+      articles.splice(delIndex, 1)
     }
   }
 }
@@ -286,5 +335,8 @@ export default {
   align-items: center;
   background-color: #fff;
   // opacity: .6;
+}
+.close {
+  right: 0;
 }
 </style>
