@@ -1,18 +1,27 @@
 <template>
     <div>
-        <van-search
+        <form action="/">
+            <van-search
             placeholder="请输入搜索关键词"
             v-model="searchText"
             show-action
-        />
+            @search="handleSearch(searchText)"
+            />
+        </form>
+
         <!-- 联想建议列表 -->
         <van-cell-group>
             <van-cell
                 icon="search"
                 v-for="item in suggestion"
-                :title="item"
                 :key="item"
-            />
+                @click="handleSearch(item)"
+            >
+            <!-- {{}} 无法输出 html 字符内容 -->
+            <!-- v-html 指令才会解析字符串中的 html -->
+            <!-- 过滤只能用在 {{}} 和 v-bind 中 -->
+            <div slot="title" v-html="hightlight(item, searchText)"></div>
+            </van-cell>
         </van-cell-group>
         <!-- 历史纪录 -->
         <!-- <van-cell-group>
@@ -39,6 +48,10 @@ export default {
     }
   },
   watch: {
+    // debounce 接收两个参数
+    // 第1参数：执行你的业务逻辑的参数函数
+    // 第2参数：防抖时间
+    // 当你同一时间调用频率过快的时候，只有停下来经过指定的时间才会来调用
     searchText: debounce(async function (newVal) {
       newVal = newVal.trim() // 去除首尾空格
       if (!newVal) {
@@ -58,8 +71,25 @@ export default {
     //   const data = await getSuggestion(newVal)
     //   this.suggestion = data.options
     // }
-  }
+  },
 
+  methods: {
+    hightlight (text, keyword) {
+      return text.toLowerCase().split(keyword)
+        .join(`<span style="color: red;">${keyword}</span>`)
+    },
+
+    handleSearch (q) {
+      this.$router.push({
+        name: 'search-result',
+        params: {
+          q
+        }
+      })
+      // this.$router.push('/search/' + q)
+      // this.$router.push(`/search/${q}`)
+    }
+  }
 }
 </script>
 
