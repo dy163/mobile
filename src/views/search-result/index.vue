@@ -60,12 +60,12 @@ export default {
     }
   },
 
-  watch: {
-    '$route' (to, from) {
-      // 对路由变化作出响应...
-      console.log('路由变化了')
-    }
-  },
+  //  watch: {
+  //   '$route' (to, from) {
+  //     // 对路由变化作出响应...
+  //     console.log('路由变化了')
+  //   }
+  // },
   /**
    * 组件缓存的情况下：页面显示出来调用它
    */
