@@ -29,6 +29,17 @@
 </template>
 
 <script>
+/**
+ * 这里有俩个缓存
+ * *组件缓存
+ *  生命周期不会重走，页面的切换会销毁重建
+ * 路由本身的缓存
+ * 当你从 a 路径导航到 b 路径的时候
+ * 由于 a 路径和 b 路径使用的都是同一个组件，那么此时默认给你路由缓存
+ * 例如我从 /search/a 到 /saerch/b，重用了
+ * 但是我从 /serach/xxx 到 /非search 没有缓存（前提是不是同一个组件）
+ *  /serach 就销毁了
+ */
 import { getSearch } from '@/api/search'
 export default {
   name: 'SearchResult',
@@ -49,6 +60,27 @@ export default {
     }
   },
 
+  watch: {
+    '$route' (to, from) {
+      // 对路由变化作出响应...
+      console.log('路由变化了')
+    }
+  },
+  /**
+   * 组件缓存的情况下：页面显示出来调用它
+   */
+  activated () {
+    this.loading = true
+    this.onLoad()
+  },
+  /**
+   * 组件缓存的情况下：页面隐藏调用它
+   */
+  deactivated () {
+    this.articles = []
+    this.page = 1
+  },
+
   async created () {
     const data = await getSearch({
       q: this.$route.params.q,
@@ -63,8 +95,8 @@ export default {
       const data = await this.getSearchResults()
       // 如果请求结果数组为空，则设置 List 组件已加载结束
       if (!data.results.length) {
-        this.loading = false
-        this.finished = true
+        this.loading = false // 没有数据就要结束加载状态
+        this.finished = true // 如果加载结束 finished为 true
         return
       }
       // 如果有数据，则将本次加载到的数据 push 到列表数组中
@@ -73,7 +105,7 @@ export default {
       this.page += 1
       // 结束当前加载的 loading
       // List 列表组件每次 onLoad 会自动将 loading 设置为 true
-      // 如果你不设置的话，它不会触发下一次的 onLoad
+      // 如果不设置的话，它不会触发下一次的 onLoad
       this.loading = false
     },
 
