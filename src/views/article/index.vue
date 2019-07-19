@@ -13,7 +13,7 @@
         />
         <div class="ariticle-content" v-html="article.content"></div>
         <!-- <AuthInfo/> -->
-        <MoreAction/>
+        <MoreAction :article="article"/>
         <CommentList/>
         <RecommendActicle/>
         <RecommendSearch/>
