@@ -34,11 +34,14 @@ export default {
   },
 
   created () {
-
+    console.log(this.$route)
   },
 
   methods: {
     async handleFollow () {
+      if (!this.$checkLogin()) {
+        return
+      }
       this.isFollowLoading = true
       try {
         const authId = this.article.aut_id

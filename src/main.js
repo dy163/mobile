@@ -2,6 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from '@/router'
 import store from '@/store'
+import checkLogin from './utils/check-login'
 /**
  * 这个第三方包引入就ok 他会自动根据页面的宽度设置基准字体
  */
@@ -33,6 +34,9 @@ Vue.prototype.$sleep = time => {
     }, time)
   })
 }
+
+// 将检查登录状态挂载到 Vue 原型对象上，这样的话任何组件就都可以使用了
+Vue.prototype.$checkLogin = checkLogin
 
 Vue.config.productionTip = false
 
