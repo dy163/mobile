@@ -6,7 +6,7 @@
             left-arrow
             @click-left="$router.back()"
         />
-        <h2 class="article-title">{{ article.title }}</h2>
+        <h4 class="article-title">{{ article.title }}</h4>
         <AuthInfo
           class="auth-info"
           :article="article"
@@ -14,9 +14,10 @@
         <div class="ariticle-content" v-html="article.content"></div>
         <!-- <AuthInfo/> -->
         <MoreAction :article="article"/>
-        <CommentList/>
-        <RecommendActicle/>
-        <RecommendSearch/>
+        <!-- <CommentList :article-id="$route.params.articleId" /> -->
+        <CommentList  :source="$route.params.articleId.toString()" />
+        <!-- <RecommendActicle/> -->
+        <!-- <RecommendSearch/> -->
         <ReplyList/>
         <WriteComment/>
     </div>
@@ -26,8 +27,8 @@
 import AuthInfo from './commponents/auth-info'
 import CommentList from './commponents/comment-list'
 import MoreAction from './commponents/more-action'
-import RecommendActicle from './commponents/recommend-acticle'
-import RecommendSearch from './commponents/recommend-search'
+// import RecommendActicle from './commponents/recommend-acticle'
+// import RecommendSearch from './commponents/recommend-search'
 import ReplyList from './commponents/reply-list'
 import WriteComment from './commponents/write-comment'
 import { getArticleDetail } from '@/api/article'
@@ -37,8 +38,8 @@ export default {
     AuthInfo,
     CommentList,
     MoreAction,
-    RecommendActicle,
-    RecommendSearch,
+    // RecommendActicle,
+    // RecommendSearch,
     ReplyList,
     WriteComment
   },

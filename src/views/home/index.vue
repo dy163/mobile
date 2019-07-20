@@ -53,7 +53,7 @@
                   <span>{{ articleItem.pubdate | relativeTime }}</span>
                   <!-- 这是更多的操作按钮 -->
                   &nbsp;
-                  <van-icon class="close" name="close" @click="handleShowMoreAction(articleItem)"/>
+                  <van-icon class="close" name="close" @click.stop="handleShowMoreAction(articleItem)"/>
                 </p>
               </div>
 
