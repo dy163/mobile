@@ -152,7 +152,7 @@ export default {
     // 监视容器中的user用户
     // 记住: 凡是能 this. 点出来的成员都可以在这里监视
     async '$store.state.user' () {
-      console.log('user 变了')
+      // console.log('user 变了')
       await this.loadChannels()
       // 由于重新加载了视频数据,所以频道被清空了
       // 而且上拉加载没有更多的onload 没有主动触发
@@ -162,7 +162,7 @@ export default {
   },
 
   async created () {
-    console.log('组件重新 created 渲染了')
+    // console.log('组件重新 created 渲染了')
     // 加载频道列表
     await this.loadChannels()
   },
@@ -201,7 +201,7 @@ export default {
       if (user) {
         // 如果用户已经登录
         const data = await getUserChannels()
-        console.log(data)
+        // console.log(data)
         channels = data.channels
       } else {
         // 没有登录
@@ -259,7 +259,7 @@ export default {
       // 数据加载完毕取消加载状态的loading
       this.activeChannel.upPullLoading = false
 
-      console.log(data)
+      // console.log(data)
     },
     // 下拉加载更多 重置数据
     async onRefresh () {
@@ -321,7 +321,7 @@ export default {
        * findIndex是数组的一个方法,会遍历数组,找到满足的articleItem.id === articleId 条件的数据的id
        */
       const delIndex = this.activeChannel.articles.findIndex(articleItem => articleItem.art_id.toString() === articleId)
-      console.log(delIndex)
+      // console.log(delIndex)
       // this.activeChannel.articles.splice(delIndex, 1)
       articles.splice(delIndex, 1)
       this.$toast('操作成功')

@@ -68,5 +68,6 @@ export default {
 <style lang="less" scoped>
 .write-comment {
   display: flex;
+  padding: 20px;
 }
 </style>

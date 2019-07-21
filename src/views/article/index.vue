@@ -16,13 +16,14 @@
         <MoreAction :article="article"/>
         <!-- <CommentList :article-id="$route.params.articleId" /> -->
         <CommentList
-        :source="$route.params.articleId.toString()"
+        :source="articleId"
          @is-replylist-show="handleIsReplyListShow"/>
         <!-- <RecommendActicle/> -->
         <!-- <RecommendSearch/> -->
         <ReplyList
           v-model="isReplyListShow"
           :comment-id="commentId"
+          :articleId="articleId"
         />
          <WriteComment :target="articleId" />
     </div>
@@ -122,6 +123,6 @@ export default {
   position: sticky;
   top: 0;
   background-color: #fff;
-   z-index: 10;
+  z-index: 10;
 }
 </style>

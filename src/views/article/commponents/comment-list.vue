@@ -92,7 +92,7 @@ export default {
         // isArticle: !!this.articleId
         isArticle: this.isArticle // 获取文章评论？还是获取评论的回复
       })
-      console.log(data)
+      // console.log(data)
       // 如果数组为空,则表示没有数据了
       if (!data.results.length) {
         this.finished = true

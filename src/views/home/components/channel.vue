@@ -111,7 +111,7 @@ export default {
     async loadAllChannels () {
       try {
         const data = await getAllChannels()
-        console.log(data)
+        // console.log(data)
         // 将获取的数据统一处理成我们需要的格式
         data.channels.forEach(item => {
           item.articles = [] // 用来存储当前的文章列表

@@ -7,7 +7,7 @@
     @close="handleClose"
     @open="handleOpen"
   >
-      <comment-list ref="comment-list" :source="commentId" :isArticle="false" />
+      <comment-list v-if="value"  ref="comment-list" :source="commentId" :isArticle="false" />
       <write-comment :target="commentId" :article-id="articleId" />
     </van-popup>
 </template>
@@ -46,10 +46,10 @@ export default {
   },
 
   activated () {
-    console.log('activated')
+    // console.log('activated')
   },
   deactivated () {
-    console.log('deactivated')
+    // console.log('deactivated')
   },
 
   methods: {
