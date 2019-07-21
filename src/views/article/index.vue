@@ -15,10 +15,15 @@
         <!-- <AuthInfo/> -->
         <MoreAction :article="article"/>
         <!-- <CommentList :article-id="$route.params.articleId" /> -->
-        <CommentList  :source="$route.params.articleId.toString()" />
+        <CommentList
+        :source="$route.params.articleId.toString()"
+         @is-replylist-show="handleIsReplyListShow"/>
         <!-- <RecommendActicle/> -->
         <!-- <RecommendSearch/> -->
-        <ReplyList/>
+        <ReplyList
+          v-model="isReplyListShow"
+          :comment-id="commentId"
+        />
         <WriteComment/>
     </div>
 </template>
@@ -59,7 +64,9 @@ export default {
         pubdate: '',
         recomments: [],
         title: ''
-      }
+      },
+      isReplyListShow: false, // 控制回复组件的显示状态
+      commentId: null // 点击回复的评论 id
     }
   },
 
@@ -79,6 +86,11 @@ export default {
       } catch (err) {
         console.log(err)
       }
+    },
+
+    handleIsReplyListShow (id) {
+      this.commentId = id
+      this.isReplyListShow = true
     }
   }
 }
@@ -92,5 +104,6 @@ export default {
   position: sticky;
   top: 0;
   background-color: #fff;
+   z-index: 10;
 }
 </style>

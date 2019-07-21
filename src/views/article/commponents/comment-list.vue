@@ -24,7 +24,7 @@
           <p>
             <span>{{ item.pubdate | relativeTime }}</span>
             ·
-            <span>回复 {{ item.reply_count }}</span>
+            <span @click="$emit('is-replylist-show', item.com_id.toString())">回复 {{ item.reply_count }}</span>
           </p>
         </div>
       </van-cell>
