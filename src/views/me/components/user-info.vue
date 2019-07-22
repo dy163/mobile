@@ -67,6 +67,7 @@ export default {
       margin-right: 30px;
       width: 100px;
       border-radius: 100%;
+      height: 80px;
     }
   }
   .data-info {
