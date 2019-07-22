@@ -56,20 +56,13 @@
                   <van-icon class="close" name="close" @click.stop="handleShowMoreAction(articleItem)"/>
                 </p>
               </div>
-
             </van-cell>
             </van-list>
           </van-pull-refresh>
-
         </van-tab>
       </van-tabs>
       <!-- 底部导航 -->
-      <van-tabbar>
-        <van-tabbar-item icon="home-o" to="/">首页</van-tabbar-item>
-        <van-tabbar-item icon="search" to="qa">问答</van-tabbar-item>
-        <van-tabbar-item icon="friends-o" to="video">视频</van-tabbar-item>
-        <van-tabbar-item icon="setting-o" to="me">我的</van-tabbar-item>
-      </van-tabbar>
+      <app-tabbar/>
       <!-- 频道组件 -->
       <home-channel
       v-model="isChannelShow"

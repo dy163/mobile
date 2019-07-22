@@ -57,6 +57,7 @@ export default {
           articleId: this.articleId
         })
         // 更新当前的评论列表
+        // this.data.content.push(content)
       } catch (err) {
         this.$toast.fail('操作失败')
       }

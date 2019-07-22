@@ -12,6 +12,8 @@ import Vant, {
 } from 'vant'
 import 'vant/lib/index.css'
 import relativeTime from './filters/relative-time'
+import AppTabbar from './components/app-tabbar'
+Vue.component('app-tabbar', AppTabbar)
 // 注册图片懒加载指令
 Vue.use(Lazyload)
 
